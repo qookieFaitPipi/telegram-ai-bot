@@ -8,6 +8,7 @@ from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
+from werkzeug.security import generate_password_hash, check_password_hash
 
 import matplotlib
 matplotlib.use('agg')
@@ -17,7 +18,7 @@ TOKEN = ''
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-WEBHOOK_URL_BASE = "https://96b7-31-134-187-189.ngrok-free.app"
+WEBHOOK_URL_BASE = "https://63e7-185-216-207-100.ngrok-free.app"
 WEBHOOK_URL_PATH = "/{}/".format(TOKEN)
 
 bot.remove_webhook()
@@ -61,11 +62,11 @@ def webhook():
 
     if chat_id in user_states and user_states[chat_id] == 'awaiting_password_register':
       try:
-        # Обработка ввода пользователя и вставка данных в базу данных
         password = message.text
-        cursor.execute("INSERT INTO users (id, password) VALUES (?, ?)", (chat_id, password))
+        hashed_password = generate_password_hash(password)
+        cursor.execute("INSERT INTO users (id, password) VALUES (?, ?)", (chat_id, hashed_password))
         conn.commit()
-        del user_states[chat_id]  # Удаляем состояние пользователя после успешной регистрации
+        del user_states[chat_id]
       except sqlite3.IntegrityError:
         send_telegram_message(chat_id, "Ошибка при регистрации пользователя. Возможно, вы уже зарегистрированы.")
       except Exception as e:
@@ -75,11 +76,14 @@ def webhook():
 
     if chat_id in user_states and user_states[chat_id] == 'awaiting_password_login':
       try:
-        # Обработка ввода пользователя и вставка данных в базу данных
         password = message.text
-        cursor.execute("SELECT * FROM users WHERE id=? AND password=?", (chat_id, password))
+        hashed_password = generate_password_hash(password)
+        cursor.execute("SELECT * FROM users WHERE id=?", (chat_id,))
         user = cursor.fetchone()
-        del user_states[chat_id]  # Удаляем состояние пользователя после успешной регистрации
+        
+        if user and user[1] == hashed_password:
+          del user_states[chat_id]
+          
       except Exception as e:
         send_telegram_message(chat_id, f"Произошла ошибка при авторизации: {e}")
       
