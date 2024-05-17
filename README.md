@@ -10,6 +10,13 @@ python3 bot.py
 </code>
 </pre>
 
+<h4>Usage:</h4>
+<pre lang="python">
+<code>
+ngrok http --scheme https 8000
+</code>
+</pre>
+
 <h4>Endpoints:</h4>
 <pre lang="python">
 <code>
