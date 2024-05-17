@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('agg')
 
-TOKEN = '6913163369:AAE_Lvke4irL52CYiW7y5ZR_ut8RLVowgAA'
+TOKEN = ''
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
