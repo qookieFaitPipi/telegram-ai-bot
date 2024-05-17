@@ -10,7 +10,7 @@ python3 bot.py
 </code>
 </pre>
 
-<h4>Usage:</h4>
+<h4>Ngrok:</h4>
 <pre lang="python">
 <code>
 ngrok http --scheme https 8000
